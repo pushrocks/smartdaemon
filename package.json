@@ -1,6 +1,6 @@
 {
   "name": "@pushrocks/smartdaemon",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "private": false,
   "description": "start scripts as long running daemons and manage them",
   "main": "dist/index.js",
