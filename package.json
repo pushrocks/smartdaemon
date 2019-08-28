@@ -20,7 +20,13 @@
     "tslint": "^5.11.0",
     "tslint-config-prettier": "^1.15.0"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@pushrocks/smartlog": "^2.0.19",
+    "@pushrocks/smartlog-destination-local": "^8.0.2",
+    "@pushrocks/smartshell": "^2.0.25",
+    "@types/fs-extra": "^8.0.0",
+    "fs-extra": "^8.1.0"
+  },
   "files": [
     "ts/*",
     "ts_web/*",
