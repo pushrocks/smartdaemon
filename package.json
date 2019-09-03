@@ -21,12 +21,12 @@
     "tslint-config-prettier": "^1.15.0"
   },
   "dependencies": {
+    "@pushrocks/lik": "^3.0.11",
+    "@pushrocks/smartfile": "^7.0.4",
     "@pushrocks/smartlog": "^2.0.19",
     "@pushrocks/smartlog-destination-local": "^8.0.2",
     "@pushrocks/smartshell": "^2.0.25",
-    "@pushrocks/smartsystem": "^2.0.8",
-    "@types/fs-extra": "^8.0.0",
-    "fs-extra": "^8.1.0"
+    "@pushrocks/smartsystem": "^2.0.8"
   },
   "files": [
     "ts/*",

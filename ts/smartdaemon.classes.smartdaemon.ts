@@ -1,60 +1,29 @@
 import * as plugins from './smartdaemon.plugins';
 import { SmartDaemonTemplateManager } from './smartdaemon.classes.templatemanager';
+import { SmartDaemonService } from './smartdaemon.classes.service';
+import { SmartDaemonSystemdManager } from './smartdaemon.classes.systemdmanager';
 
-const smartDaemonNamespace = 'smartdaemon_';
 
-interface SmartDaemonConstructorOptions {
-  name: string;
-  scriptPath: string;
-  workingDir: string;
-}
 
 export class SmartDaemon {
-  private templateManager: SmartDaemonTemplateManager;
-  private smartshellInstance: plugins.smartshell.Smartshell;
-  private smartsystem: plugins.smartsystem.Smartsystem;
-  private shouldExecute: boolean = false;
+  
+  public serviceMap: plugins.lik.Objectmap<SmartDaemonService>;
+  public templateManager: SmartDaemonTemplateManager;
+  public systemdManager: SmartDaemonSystemdManager;
 
   constructor() {
-    this.templateManager = new SmartDaemonTemplateManager;
-    this.smartshellInstance = new plugins.smartshell.Smartshell({
-      executor: 'bash'
-    });
-    this.smartsystem = new plugins.smartsystem.Smartsystem();
+    this.serviceMap = new plugins.lik.Objectmap<SmartDaemonService>();
+    this.templateManager = new SmartDaemonTemplateManager(this);
+    this.systemdManager = new SmartDaemonSystemdManager(this);
   }
 
-  public async checkElegibility () {
-    if (await this.smartsystem.env.isLinuxAsync()) {
-      this.shouldExecute = true;
-    } else {
-      console.log('Smartdaemon can only be used on Linuc systems! Refusing to set up a service.');
-      this.shouldExecute = false;
-    }
-    return this.shouldExecute;
-  }
-
-  /**
-   * enables the service
-   */
-  public async enable() {
-
+  public async addService(serviceName: string, workingDirectory): Promise<SmartDaemonService> {
+    const existingService = this.serviceMap.find(serviceArg => {
+      return serviceArg
+    })
   };
 
-  /**
-   * disables the service
-   */
-  public async disable() {
-    
-  };
-
-  /**
-   * pauses the service
-   */
-  public pause() {};
-
-  
-  private async execute(commandArg: string) {
-    
-    this.smartshellInstance.exec(commandArg);
+  public async init() {
+    await this.systemdManager.init();
   }
 }
