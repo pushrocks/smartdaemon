@@ -17,10 +17,17 @@ export class SmartDaemon {
     this.systemdManager = new SmartDaemonSystemdManager(this);
   }
 
-  public async addService(serviceName: string, workingDirectory): Promise<SmartDaemonService> {
+  public async addService(serviceNameArg: string, commandArg: string, workingDirectory?: string): Promise<SmartDaemonService> {
+    let serviceToAdd: SmartDaemonService;
     const existingService = this.serviceMap.find(serviceArg => {
-      return serviceArg
-    })
+      return serviceArg.name === serviceNameArg;
+    });
+    if (!existingService) {
+
+    } else {
+
+    }
+    return serviceToAdd;
   };
 
   public async init() {
