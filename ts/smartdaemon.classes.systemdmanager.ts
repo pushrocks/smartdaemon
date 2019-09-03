@@ -35,7 +35,7 @@ export class SmartDaemonSystemdManager {
     if (await this.smartsystem.env.isLinuxAsync()) {
       this.shouldExecute = true;
     } else {
-      console.log('Smartdaemon can only be used on Linuc systems! Refusing to set up a service.');
+      console.log('Smartdaemon can only be used on Linux systems! Refusing to set up a service.');
       this.shouldExecute = false;
     }
     return this.shouldExecute;

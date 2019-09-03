@@ -33,10 +33,10 @@ export class SmartDaemon {
     } else {
       serviceToAdd = existingService;
       Object.assign(serviceToAdd, optionsArg);
-      await serviceToAdd.save();
     }
+    await serviceToAdd.save();
     return serviceToAdd;
-  };
+  }
 
   public async init() {
     await this.systemdManager.init();
