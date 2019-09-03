@@ -17,7 +17,7 @@ export class SmartDaemonService implements SmartDaemonServiceConstructorOptions 
     for (const key of Object.keys(optionsArg)) {
       service[key] = optionsArg[key];
     }
-
+    return service;
   }
 
   public options: SmartDaemonServiceConstructorOptions;
@@ -50,4 +50,8 @@ export class SmartDaemonService implements SmartDaemonServiceConstructorOptions 
    * pauses the service
    */
   public pause() {};
+
+  public save() {
+
+  }
 }
