@@ -7,14 +7,16 @@ export {
 };
 
 // @pushrocks scope
-import * as smartshell from '@pushrocks/smartshell';
 import * as smartlog from '@pushrocks/smartlog';
 import * as smartlogDestinationLocal from '@pushrocks/smartlog-destination-local';
+import * as smartshell from '@pushrocks/smartshell';
+import * as smartsystem from '@pushrocks/smartsystem';
 
 export {
-  smartshell,
   smartlog,
-  smartlogDestinationLocal
+  smartlogDestinationLocal,
+  smartshell,
+  smartsystem
 };
 
 // third party
