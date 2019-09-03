@@ -1,6 +1,6 @@
 import * as plugins from './smartdaemon.plugins';
 import { SmartDaemonTemplateManager } from './smartdaemon.classes.templatemanager';
-import { SmartDaemonService } from './smartdaemon.classes.service';
+import { SmartDaemonService, SmartDaemonServiceConstructorOptions } from './smartdaemon.classes.service';
 import { SmartDaemonSystemdManager } from './smartdaemon.classes.systemdmanager';
 
 
@@ -17,19 +17,23 @@ export class SmartDaemon {
     this.systemdManager = new SmartDaemonSystemdManager(this);
   }
 
-  public async addService(nameArg: string, commandArg: string, workingDirectoryArg?: string): Promise<SmartDaemonService> {
+  /**
+   * adds a service
+   * @param nameArg
+   * @param commandArg 
+   * @param workingDirectoryArg 
+   */
+  public async addService(optionsArg: SmartDaemonServiceConstructorOptions): Promise<SmartDaemonService> {
     let serviceToAdd: SmartDaemonService;
     const existingService = this.serviceMap.find(serviceArg => {
-      return serviceArg.name === nameArg;
+      return serviceArg.name === optionsArg.name;
     });
     if (!existingService) {
-      serviceToAdd = await SmartDaemonService.createFromOptions(this, {
-        command: commandArg,
-        name: nameArg,
-        workingDir: workingDirectoryArg
-      })
+      serviceToAdd = await SmartDaemonService.createFromOptions(this, optionsArg);
     } else {
-
+      serviceToAdd = existingService;
+      Object.assign(serviceToAdd, optionsArg);
+      await serviceToAdd.save();
     }
     return serviceToAdd;
   };

@@ -14,7 +14,6 @@ export class SmartDaemonTemplateManager {
     serviceVersion: string;
     command: string;
     pathWorkkingDir;
-    pathJsFileToRun;
   }) => {
     return `
 # servicVersion: ${optionsArg.serviceVersion}

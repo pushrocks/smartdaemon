@@ -4,6 +4,7 @@ import { SmartDaemon } from './smartdaemon.classes.smartdaemon';
 
 export interface SmartDaemonServiceConstructorOptions {
   name: string;
+  description: string;
   command: string;
   workingDir: string;
 }
@@ -23,6 +24,7 @@ export class SmartDaemonService implements SmartDaemonServiceConstructorOptions 
   public options: SmartDaemonServiceConstructorOptions;
 
   public name: string;
+  public description: string;
   public command: string;
   public workingDir: string;
 
@@ -36,22 +38,45 @@ export class SmartDaemonService implements SmartDaemonServiceConstructorOptions 
    * enables the service
    */
   public async enable() {
-    this.smartdaemonRef
+    await this.save();
+    await this.smartdaemonRef.systemdManager.enableService(this.name);
   }
 
   /**
    * disables the service
    */
   public async disable() {
-
+    await this.smartdaemonRef.systemdManager.disableService(this.name);
   }
 
   /**
-   * pauses the service
+   * starts a service
    */
-  public pause() {};
+  public async start() {
+    await this.smartdaemonRef.systemdManager.startService(this.name);
+  }
 
-  public save() {
+  /**
+   * stops a service
+   */
+  public async stop() {
+    await this.smartdaemonRef.systemdManager.stopService(this.name);
+  }
 
+
+  // Save and Delete
+  public async save() {
+    await this.smartdaemonRef.systemdManager.saveService(this.name, this.smartdaemonRef.templateManager.generateServiceTemplate({
+      command: this.command,
+      description: this.description,
+      pathWorkkingDir: this.workingDir,
+      serviceName: this.name,
+      serviceVersion: 'x.x.x'
+    }));
+  }
+
+  /** */
+  public async delete() {
+    await this.smartdaemonRef.systemdManager.deleteService(this.name);
   }
 }
