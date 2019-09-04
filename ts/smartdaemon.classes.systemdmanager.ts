@@ -4,7 +4,7 @@ import { SmartDaemon } from './smartdaemon.classes.smartdaemon';
 
 export class SmartDaemonSystemdManager {
   // STATIC
-  private static smartDaemonNamespace = 'smartdaemon_';
+  private static smartDaemonNamespace = 'smartdaemon';
   public static createFileNameFromServiceName = (serviceNameArg: string) => {
     return `${SmartDaemonSystemdManager.smartDaemonNamespace}_${serviceNameArg}.service`;
   };
