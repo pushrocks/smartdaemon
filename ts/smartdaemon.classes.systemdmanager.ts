@@ -52,7 +52,7 @@ export class SmartDaemonSystemdManager {
    * gets all services that are already present
    */
   public async getServices() {
-    const existingServices = [];
+    const existingServices: SmartDaemonService[] = [];
     if (await this.checkElegibility()) {
       const smartfmInstance = new plugins.smartfm.Smartfm({
         fmType: 'yaml'
@@ -64,56 +64,61 @@ export class SmartDaemonSystemdManager {
       for (const serviceFile of availableServices) {
         const data = smartfmInstance.parseFromComments('# ', serviceFile.contentBuffer.toString())
           .data as ISmartDaemonServiceConstructorOptions;
-        const service = SmartDaemonService.createFromOptions(this.smartdaemonRef, data);
+        const service = await SmartDaemonService.createFromOptions(this.smartdaemonRef, data);
+        service.alreadyExists = true;
         existingServices.push(service);
       }
     }
     return existingServices;
   }
 
-  public async startService(serviceNameArg: string) {
+  public async startService(serviceArg: SmartDaemonService) {
     if (await this.checkElegibility()) {
       await this.execute(
-        `systemctl start ${SmartDaemonSystemdManager.createFilePathFromServiceName(serviceNameArg)}`
+        `systemctl start ${SmartDaemonSystemdManager.createFilePathFromServiceName(serviceArg.name)}`
       );
     }
   }
-  public async stopService(serviceNameArg: string) {
+  public async stopService(serviceArg: SmartDaemonService) {
     if (await this.checkElegibility()) {
       await this.execute(
-        `systemctl stop ${SmartDaemonSystemdManager.createFilePathFromServiceName(serviceNameArg)}`
+        `systemctl stop ${SmartDaemonSystemdManager.createFilePathFromServiceName(serviceArg.name)}`
       );
     }
   }
 
-  public async saveService(serviceNameArg: string, serviceFileString: string) {
+  public async saveService(serviceArg: SmartDaemonService) {
     if (await this.checkElegibility()) {
+      if (serviceArg.alreadyExists) {
+        this.stopService(serviceArg);
+      }
       await plugins.smartfile.memory.toFs(
-        serviceFileString,
-        SmartDaemonSystemdManager.createFilePathFromServiceName(serviceNameArg)
+        this.smartdaemonRef.templateManager.generateUnitFileForService(serviceArg),
+        SmartDaemonSystemdManager.createFilePathFromServiceName(serviceArg.name)
       );
     }
   }
 
-  public async deleteService(serviceName: string) {
+  public async deleteService(serviceArg: SmartDaemonService) {
     if (await this.checkElegibility()) {
       await plugins.smartfile.fs.remove(
-        SmartDaemonSystemdManager.createFilePathFromServiceName(serviceName)
+        SmartDaemonSystemdManager.createFilePathFromServiceName(serviceArg.name)
       );
     }
   }
 
-  public async enableService(serviceName: string) {
+  public async enableService(serviceArg: SmartDaemonService) {
     if (await this.checkElegibility()) {
+      await this.saveService(serviceArg);
       await this.execute(
-        `systemctl enable ${SmartDaemonSystemdManager.createFileNameFromServiceName(serviceName)}`
+        `systemctl enable ${SmartDaemonSystemdManager.createFileNameFromServiceName(serviceArg.name)}`
       );
     }
   }
-  public async disableService(serviceName: string) {
+  public async disableService(serviceArg: SmartDaemonService) {
     if (await this.checkElegibility()) {
       await this.execute(
-        `systemctl disable ${SmartDaemonSystemdManager.createFileNameFromServiceName(serviceName)}`
+        `systemctl disable ${SmartDaemonSystemdManager.createFileNameFromServiceName(serviceArg.name)}`
       );
     }
   }

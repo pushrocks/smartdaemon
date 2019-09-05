@@ -1,5 +1,6 @@
 import * as plugins from './smartdaemon.plugins';
 import { SmartDaemon } from './smartdaemon.classes.smartdaemon';
+import { SmartDaemonService } from './smartdaemon.classes.service';
 
 export class SmartDaemonTemplateManager {
   public smartdaemonRef: SmartDaemon;
@@ -8,29 +9,23 @@ export class SmartDaemonTemplateManager {
     this.smartdaemonRef = smartdaemonRefArg;
   }
 
-  public generateServiceTemplate = (optionsArg: {
-    name: string;
-    description: string;
-    version: string;
-    command: string;
-    workkingDir;
-  }) => {
+  public generateUnitFileForService = (serviceArg: SmartDaemonService) => {
     return `# ---
-# name: ${optionsArg.name}
-# version: ${optionsArg.version}
-# description: ${optionsArg.description}
-# command: ${optionsArg.command}
-# workingDir: ${optionsArg.workkingDir}
+# name: ${serviceArg.name}
+# version: ${serviceArg.version}
+# description: ${serviceArg.description}
+# command: ${serviceArg.command}
+# workingDir: ${serviceArg.workingDir}
 # ---
 [Unit]
-Description=${optionsArg.description}
+Description=${serviceArg.description}
 Requires=network.target
 After=network.target
 
 [Service]
 Type=simple
-ExecStart=/bin/bash -c "cd ${optionsArg.workkingDir} && ${optionsArg.command}"
-WorkingDirectory=${optionsArg.workkingDir}
+ExecStart=/bin/bash -c "cd ${serviceArg.workingDir} && ${serviceArg.command}"
+WorkingDirectory=${serviceArg.workingDir}
 Restart=on-failure
 LimitNOFILE=infinity
 LimitCORE=infinity

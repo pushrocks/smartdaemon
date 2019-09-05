@@ -23,6 +23,7 @@ export class SmartDaemonService implements ISmartDaemonServiceConstructorOptions
   }
 
   public options: ISmartDaemonServiceConstructorOptions;
+  public alreadyExists = false;
 
   public name: string;
   public version: string;
@@ -40,48 +41,40 @@ export class SmartDaemonService implements ISmartDaemonServiceConstructorOptions
    * enables the service
    */
   public async enable() {
-    await this.save();
-    await this.smartdaemonRef.systemdManager.enableService(this.name);
+    await this.smartdaemonRef.systemdManager.enableService(this);
   }
 
   /**
    * disables the service
    */
   public async disable() {
-    await this.smartdaemonRef.systemdManager.disableService(this.name);
+    await this.smartdaemonRef.systemdManager.disableService(this);
   }
 
   /**
    * starts a service
    */
   public async start() {
-    await this.smartdaemonRef.systemdManager.startService(this.name);
+    await this.smartdaemonRef.systemdManager.startService(this);
   }
 
   /**
    * stops a service
    */
   public async stop() {
-    await this.smartdaemonRef.systemdManager.stopService(this.name);
+    await this.smartdaemonRef.systemdManager.stopService(this);
   }
 
 
   // Save and Delete
   public async save() {
-    const serviceTemplate = this.smartdaemonRef.templateManager.generateServiceTemplate({
-      name: this.name,
-      version: this.version,
-      command: this.command,
-      workkingDir: this.workingDir,
-      description: this.description,
-    });
-    await this.smartdaemonRef.systemdManager.saveService(this.name, serviceTemplate);
+    await this.smartdaemonRef.systemdManager.saveService(this);
   }
 
   /**
    * deletes the service
    */
   public async delete() {
-    await this.smartdaemonRef.systemdManager.deleteService(this.name);
+    await this.smartdaemonRef.systemdManager.deleteService(this);
   }
 }
