@@ -79,6 +79,9 @@ export class SmartDaemonSystemdManager {
 
   public async startService(serviceArg: SmartDaemonService) {
     if (await this.checkElegibility()) {
+      if (serviceArg.alreadyExists) {
+        await this.stopService(serviceArg);
+      }
       await this.execute(
         `systemctl start ${SmartDaemonSystemdManager.createServiceNameFromServiceName(serviceArg.name)}`
       );
@@ -94,9 +97,6 @@ export class SmartDaemonSystemdManager {
 
   public async saveService(serviceArg: SmartDaemonService) {
     if (await this.checkElegibility()) {
-      if (serviceArg.alreadyExists) {
-        this.stopService(serviceArg);
-      }
       await plugins.smartfile.memory.toFs(
         this.smartdaemonRef.templateManager.generateUnitFileForService(serviceArg),
         SmartDaemonSystemdManager.createFilePathFromServiceName(serviceArg.name)
@@ -115,6 +115,9 @@ export class SmartDaemonSystemdManager {
   public async enableService(serviceArg: SmartDaemonService) {
     if (await this.checkElegibility()) {
       await this.saveService(serviceArg);
+      if (serviceArg.alreadyExists) {
+        await this.execute(`systemctl daemon-reload`);
+      }
       await this.execute(
         `systemctl enable ${SmartDaemonSystemdManager.createServiceNameFromServiceName(serviceArg.name)}`
       );
