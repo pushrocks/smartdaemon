@@ -10,9 +10,10 @@ tap.test('should create an instance of smartdaemon', async () => {
 
 tap.test('should create a service', async () => {
   testSmartdaemon.addService({
+    name: 'npmversion',
+    version: 'x.x.x',
     command: 'npm -v',
     description: 'displays the npm version',
-    name: 'npmversion',
     workingDir: __dirname
   });
 });

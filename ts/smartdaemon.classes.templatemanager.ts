@@ -9,14 +9,19 @@ export class SmartDaemonTemplateManager {
   }
 
   public generateServiceTemplate = (optionsArg: {
-    serviceName: string;
+    name: string;
     description: string;
-    serviceVersion: string;
+    version: string;
     command: string;
-    pathWorkkingDir;
+    workkingDir;
   }) => {
-    return `
-# servicVersion: ${optionsArg.serviceVersion}
+    return `# ---
+# name: ${optionsArg.name}
+# version: ${optionsArg.version}
+# description: ${optionsArg.description}
+# command: ${optionsArg.command}
+# workingDir: ${optionsArg.workkingDir}
+# ---
 [Unit]
 Description=${optionsArg.description}
 Requires=network.target
@@ -24,8 +29,8 @@ After=network.target
 
 [Service]
 Type=simple
-ExecStart=/bin/bash -c "cd ${optionsArg.pathWorkkingDir} && ${optionsArg.command}"
-WorkingDirectory=${optionsArg.pathWorkkingDir}
+ExecStart=/bin/bash -c "cd ${optionsArg.workkingDir} && ${optionsArg.command}"
+WorkingDirectory=${optionsArg.workkingDir}
 Restart=on-failure
 LimitNOFILE=infinity
 LimitCORE=infinity

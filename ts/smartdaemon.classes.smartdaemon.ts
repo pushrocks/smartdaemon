@@ -1,18 +1,15 @@
 import * as plugins from './smartdaemon.plugins';
 import { SmartDaemonTemplateManager } from './smartdaemon.classes.templatemanager';
-import { SmartDaemonService, SmartDaemonServiceConstructorOptions } from './smartdaemon.classes.service';
+import { SmartDaemonService, ISmartDaemonServiceConstructorOptions } from './smartdaemon.classes.service';
 import { SmartDaemonSystemdManager } from './smartdaemon.classes.systemdmanager';
 
 
 
 export class SmartDaemon {
-  
-  public serviceMap: plugins.lik.Objectmap<SmartDaemonService>;
   public templateManager: SmartDaemonTemplateManager;
   public systemdManager: SmartDaemonSystemdManager;
 
   constructor() {
-    this.serviceMap = new plugins.lik.Objectmap<SmartDaemonService>();
     this.templateManager = new SmartDaemonTemplateManager(this);
     this.systemdManager = new SmartDaemonSystemdManager(this);
   }
@@ -23,9 +20,10 @@ export class SmartDaemon {
    * @param commandArg 
    * @param workingDirectoryArg 
    */
-  public async addService(optionsArg: SmartDaemonServiceConstructorOptions): Promise<SmartDaemonService> {
+  public async addService(optionsArg: ISmartDaemonServiceConstructorOptions): Promise<SmartDaemonService> {
     let serviceToAdd: SmartDaemonService;
-    const existingService = this.serviceMap.find(serviceArg => {
+    const existingServices = await this.systemdManager.getServices();
+    const existingService = existingServices.find(serviceArg => {
       return serviceArg.name === optionsArg.name;
     });
     if (!existingService) {

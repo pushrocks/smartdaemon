@@ -1,6 +1,7 @@
 import * as plugins from './smartdaemon.plugins';
 import * as paths from './smartdaemon.paths';
 import { SmartDaemon } from './smartdaemon.classes.smartdaemon';
+import { ISmartDaemonServiceConstructorOptions, SmartDaemonService } from './smartdaemon.classes.service';
 
 export class SmartDaemonSystemdManager {
   // STATIC
@@ -47,23 +48,41 @@ export class SmartDaemonSystemdManager {
     }
   }
 
+  /**
+   * gets all services that are already present
+   */
   public async getServices() {
+    const existingServices = [];
     if (await this.checkElegibility()) {
-      const availableServices = plugins.smartfile.fs.listAllItems(
+      const smartfmInstance = new plugins.smartfm.Smartfm({
+        fmType: 'yaml'
+      });
+      const availableServices = await plugins.smartfile.fs.fileTreeToObject(
         paths.systemdDir,
-        new RegExp(`${SmartDaemonSystemdManager.smartDaemonNamespace}`)
+        'smartdaemon_*.service'
       );
+      for (const serviceFile of availableServices) {
+        const data = smartfmInstance.parseFromComments('# ', serviceFile.contentBuffer.toString())
+          .data as ISmartDaemonServiceConstructorOptions;
+        const service = SmartDaemonService.createFromOptions(this.smartdaemonRef, data);
+        existingServices.push(service);
+      }
     }
+    return existingServices;
   }
 
   public async startService(serviceNameArg: string) {
     if (await this.checkElegibility()) {
-      await this.execute(`systemctl start ${SmartDaemonSystemdManager.createFilePathFromServiceName(serviceNameArg)}`);
+      await this.execute(
+        `systemctl start ${SmartDaemonSystemdManager.createFilePathFromServiceName(serviceNameArg)}`
+      );
     }
-  };
+  }
   public async stopService(serviceNameArg: string) {
     if (await this.checkElegibility()) {
-      await this.execute(`systemctl stop ${SmartDaemonSystemdManager.createFilePathFromServiceName(serviceNameArg)}`);
+      await this.execute(
+        `systemctl stop ${SmartDaemonSystemdManager.createFilePathFromServiceName(serviceNameArg)}`
+      );
     }
   }
 
@@ -78,18 +97,24 @@ export class SmartDaemonSystemdManager {
 
   public async deleteService(serviceName: string) {
     if (await this.checkElegibility()) {
-      await plugins.smartfile.fs.remove(SmartDaemonSystemdManager.createFilePathFromServiceName(serviceName));
+      await plugins.smartfile.fs.remove(
+        SmartDaemonSystemdManager.createFilePathFromServiceName(serviceName)
+      );
     }
   }
 
   public async enableService(serviceName: string) {
     if (await this.checkElegibility()) {
-      await this.execute(`systemctl enable ${SmartDaemonSystemdManager.createFileNameFromServiceName(serviceName)}`);
+      await this.execute(
+        `systemctl enable ${SmartDaemonSystemdManager.createFileNameFromServiceName(serviceName)}`
+      );
     }
   }
   public async disableService(serviceName: string) {
     if (await this.checkElegibility()) {
-      await this.execute(`systemctl disable ${SmartDaemonSystemdManager.createFileNameFromServiceName(serviceName)}`);
+      await this.execute(
+        `systemctl disable ${SmartDaemonSystemdManager.createFileNameFromServiceName(serviceName)}`
+      );
     }
   }
 

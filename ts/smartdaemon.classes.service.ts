@@ -2,18 +2,19 @@ import * as plugins from './smartdaemon.plugins';
 import * as paths from './smartdaemon.paths';
 import { SmartDaemon } from './smartdaemon.classes.smartdaemon';
 
-export interface SmartDaemonServiceConstructorOptions {
+export interface ISmartDaemonServiceConstructorOptions {
   name: string;
   description: string;
   command: string;
   workingDir: string;
+  version: string;
 }
 
 /**
  * represents a service that is being spawned by SmartDaemon
  */
-export class SmartDaemonService implements SmartDaemonServiceConstructorOptions {
-  public static async createFromOptions(smartdaemonRef: SmartDaemon, optionsArg: SmartDaemonServiceConstructorOptions) {
+export class SmartDaemonService implements ISmartDaemonServiceConstructorOptions {
+  public static async createFromOptions(smartdaemonRef: SmartDaemon, optionsArg: ISmartDaemonServiceConstructorOptions) {
     const service = new SmartDaemonService(smartdaemonRef);
     for (const key of Object.keys(optionsArg)) {
       service[key] = optionsArg[key];
@@ -21,12 +22,13 @@ export class SmartDaemonService implements SmartDaemonServiceConstructorOptions 
     return service;
   }
 
-  public options: SmartDaemonServiceConstructorOptions;
+  public options: ISmartDaemonServiceConstructorOptions;
 
   public name: string;
-  public description: string;
+  public version: string;
   public command: string;
   public workingDir: string;
+  public description: string;
 
   public smartdaemonRef: SmartDaemon;
 
@@ -66,16 +68,19 @@ export class SmartDaemonService implements SmartDaemonServiceConstructorOptions 
 
   // Save and Delete
   public async save() {
-    await this.smartdaemonRef.systemdManager.saveService(this.name, this.smartdaemonRef.templateManager.generateServiceTemplate({
+    const serviceTemplate = this.smartdaemonRef.templateManager.generateServiceTemplate({
+      name: this.name,
+      version: this.version,
       command: this.command,
+      workkingDir: this.workingDir,
       description: this.description,
-      pathWorkkingDir: this.workingDir,
-      serviceName: this.name,
-      serviceVersion: 'x.x.x'
-    }));
+    });
+    await this.smartdaemonRef.systemdManager.saveService(this.name, serviceTemplate);
   }
 
-  /** */
+  /**
+   * deletes the service
+   */
   public async delete() {
     await this.smartdaemonRef.systemdManager.deleteService(this.name);
   }
