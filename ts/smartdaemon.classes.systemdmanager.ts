@@ -6,16 +6,21 @@ import { ISmartDaemonServiceConstructorOptions, SmartDaemonService } from './sma
 export class SmartDaemonSystemdManager {
   // STATIC
   private static smartDaemonNamespace = 'smartdaemon';
-  public static createFileNameFromServiceName = (serviceNameArg: string) => {
-    return `${SmartDaemonSystemdManager.smartDaemonNamespace}_${serviceNameArg}.service`;
+
+  public static createServiceNameFromServiceName (serviceNameArg: string) {
+    return `${SmartDaemonSystemdManager.smartDaemonNamespace}_${serviceNameArg}`;
+  }
+
+  public static createFileNameFromServiceName (serviceNameArg: string) {
+    return `${SmartDaemonSystemdManager.createServiceNameFromServiceName(serviceNameArg)}.service`;
   };
 
-  public static createFilePathFromServiceName = (serviceNameArg: string) => {
+  public static createFilePathFromServiceName (serviceNameArg: string) {
     return plugins.path.join(
       paths.systemdDir,
       SmartDaemonSystemdManager.createFileNameFromServiceName(serviceNameArg)
     );
-  };
+  }
 
   // INSTANCE
   public smartdaemonRef: SmartDaemon;
@@ -75,14 +80,14 @@ export class SmartDaemonSystemdManager {
   public async startService(serviceArg: SmartDaemonService) {
     if (await this.checkElegibility()) {
       await this.execute(
-        `systemctl start ${SmartDaemonSystemdManager.createFilePathFromServiceName(serviceArg.name)}`
+        `systemctl start ${SmartDaemonSystemdManager.createServiceNameFromServiceName(serviceArg.name)}`
       );
     }
   }
   public async stopService(serviceArg: SmartDaemonService) {
     if (await this.checkElegibility()) {
       await this.execute(
-        `systemctl stop ${SmartDaemonSystemdManager.createFilePathFromServiceName(serviceArg.name)}`
+        `systemctl stop ${SmartDaemonSystemdManager.createServiceNameFromServiceName(serviceArg.name)}`
       );
     }
   }
@@ -102,7 +107,7 @@ export class SmartDaemonSystemdManager {
   public async deleteService(serviceArg: SmartDaemonService) {
     if (await this.checkElegibility()) {
       await plugins.smartfile.fs.remove(
-        SmartDaemonSystemdManager.createFilePathFromServiceName(serviceArg.name)
+        SmartDaemonSystemdManager.createServiceNameFromServiceName(serviceArg.name)
       );
     }
   }
@@ -111,14 +116,14 @@ export class SmartDaemonSystemdManager {
     if (await this.checkElegibility()) {
       await this.saveService(serviceArg);
       await this.execute(
-        `systemctl enable ${SmartDaemonSystemdManager.createFileNameFromServiceName(serviceArg.name)}`
+        `systemctl enable ${SmartDaemonSystemdManager.createServiceNameFromServiceName(serviceArg.name)}`
       );
     }
   }
   public async disableService(serviceArg: SmartDaemonService) {
     if (await this.checkElegibility()) {
       await this.execute(
-        `systemctl disable ${SmartDaemonSystemdManager.createFileNameFromServiceName(serviceArg.name)}`
+        `systemctl disable ${SmartDaemonSystemdManager.createServiceNameFromServiceName(serviceArg.name)}`
       );
     }
   }
