@@ -77,4 +77,8 @@ export class SmartDaemonService implements ISmartDaemonServiceConstructorOptions
   public async delete() {
     await this.smartdaemonRef.systemdManager.deleteService(this);
   }
+
+  public async reload() {
+    await this.smartdaemonRef.systemdManager.reload();
+  }
 }

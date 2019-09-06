@@ -35,8 +35,4 @@ export class SmartDaemon {
     await serviceToAdd.save();
     return serviceToAdd;
   }
-
-  public async init() {
-    await this.systemdManager.init();
-  }
 }

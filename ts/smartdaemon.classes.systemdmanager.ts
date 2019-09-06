@@ -79,9 +79,6 @@ export class SmartDaemonSystemdManager {
 
   public async startService(serviceArg: SmartDaemonService) {
     if (await this.checkElegibility()) {
-      if (serviceArg.alreadyExists) {
-        await this.stopService(serviceArg);
-      }
       await this.execute(
         `systemctl start ${SmartDaemonSystemdManager.createServiceNameFromServiceName(serviceArg.name)}`
       );
@@ -131,5 +128,11 @@ export class SmartDaemonSystemdManager {
     }
   }
 
-  public async init() {}
+  public async reload() {
+    if (await this.checkElegibility()) {
+      await this.execute(
+        `systemctl daemon-reload`
+      );
+    }
+  }
 }
