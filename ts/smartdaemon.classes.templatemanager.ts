@@ -24,7 +24,7 @@ After=network.target
 
 [Service]
 Type=simple
-Environment=NODE_OPTIONS=--max_old_space_size=100
+Environment=NODE_OPTIONS="--max_old_space_size=100"
 ExecStart=/bin/bash -c "cd ${serviceArg.workingDir} && ${serviceArg.command}"
 WorkingDirectory=${serviceArg.workingDir}
 Restart=on-failure
