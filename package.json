@@ -8,9 +8,8 @@
   "author": "Lossless GmbH",
   "license": "MIT",
   "scripts": {
-    "test": "(tstest test/)",
-    "build": "(tsbuild)",
-    "format": "(gitzone format)"
+    "test": "(tstest test/ --web)",
+    "build": "(tsbuild --web)"
   },
   "devDependencies": {
     "@gitzone/tsbuild": "^2.1.25",
