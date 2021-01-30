@@ -14,7 +14,10 @@ export interface ISmartDaemonServiceConstructorOptions {
  * represents a service that is being spawned by SmartDaemon
  */
 export class SmartDaemonService implements ISmartDaemonServiceConstructorOptions {
-  public static async createFromOptions(smartdaemonRef: SmartDaemon, optionsArg: ISmartDaemonServiceConstructorOptions) {
+  public static async createFromOptions(
+    smartdaemonRef: SmartDaemon,
+    optionsArg: ISmartDaemonServiceConstructorOptions
+  ) {
     const service = new SmartDaemonService(smartdaemonRef);
     for (const key of Object.keys(optionsArg)) {
       service[key] = optionsArg[key];
@@ -64,7 +67,6 @@ export class SmartDaemonService implements ISmartDaemonServiceConstructorOptions
   public async stop() {
     await this.smartdaemonRef.systemdManager.stopService(this);
   }
-
 
   // Save and Delete
   public async save() {

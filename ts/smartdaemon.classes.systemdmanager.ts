@@ -1,21 +1,24 @@
 import * as plugins from './smartdaemon.plugins';
 import * as paths from './smartdaemon.paths';
 import { SmartDaemon } from './smartdaemon.classes.smartdaemon';
-import { ISmartDaemonServiceConstructorOptions, SmartDaemonService } from './smartdaemon.classes.service';
+import {
+  ISmartDaemonServiceConstructorOptions,
+  SmartDaemonService,
+} from './smartdaemon.classes.service';
 
 export class SmartDaemonSystemdManager {
   // STATIC
   private static smartDaemonNamespace = 'smartdaemon';
 
-  public static createServiceNameFromServiceName (serviceNameArg: string) {
+  public static createServiceNameFromServiceName(serviceNameArg: string) {
     return `${SmartDaemonSystemdManager.smartDaemonNamespace}_${serviceNameArg}`;
   }
 
-  public static createFileNameFromServiceName (serviceNameArg: string) {
+  public static createFileNameFromServiceName(serviceNameArg: string) {
     return `${SmartDaemonSystemdManager.createServiceNameFromServiceName(serviceNameArg)}.service`;
-  };
+  }
 
-  public static createFilePathFromServiceName (serviceNameArg: string) {
+  public static createFilePathFromServiceName(serviceNameArg: string) {
     return plugins.path.join(
       paths.systemdDir,
       SmartDaemonSystemdManager.createFileNameFromServiceName(serviceNameArg)
@@ -32,7 +35,7 @@ export class SmartDaemonSystemdManager {
   constructor(smartdaemonRefArg: SmartDaemon) {
     this.smartdaemonRef = smartdaemonRefArg;
     this.smartshellInstance = new plugins.smartshell.Smartshell({
-      executor: 'bash'
+      executor: 'bash',
     });
     this.smartsystem = new plugins.smartsystem.Smartsystem();
   }
@@ -60,7 +63,7 @@ export class SmartDaemonSystemdManager {
     const existingServices: SmartDaemonService[] = [];
     if (await this.checkElegibility()) {
       const smartfmInstance = new plugins.smartfm.Smartfm({
-        fmType: 'yaml'
+        fmType: 'yaml',
       });
       const availableServices = await plugins.smartfile.fs.fileTreeToObject(
         paths.systemdDir,
@@ -80,14 +83,18 @@ export class SmartDaemonSystemdManager {
   public async startService(serviceArg: SmartDaemonService) {
     if (await this.checkElegibility()) {
       await this.execute(
-        `systemctl start ${SmartDaemonSystemdManager.createServiceNameFromServiceName(serviceArg.name)}`
+        `systemctl start ${SmartDaemonSystemdManager.createServiceNameFromServiceName(
+          serviceArg.name
+        )}`
       );
     }
   }
   public async stopService(serviceArg: SmartDaemonService) {
     if (await this.checkElegibility()) {
       await this.execute(
-        `systemctl stop ${SmartDaemonSystemdManager.createServiceNameFromServiceName(serviceArg.name)}`
+        `systemctl stop ${SmartDaemonSystemdManager.createServiceNameFromServiceName(
+          serviceArg.name
+        )}`
       );
     }
   }
@@ -116,23 +123,25 @@ export class SmartDaemonSystemdManager {
         await this.execute(`systemctl daemon-reload`);
       }
       await this.execute(
-        `systemctl enable ${SmartDaemonSystemdManager.createServiceNameFromServiceName(serviceArg.name)}`
+        `systemctl enable ${SmartDaemonSystemdManager.createServiceNameFromServiceName(
+          serviceArg.name
+        )}`
       );
     }
   }
   public async disableService(serviceArg: SmartDaemonService) {
     if (await this.checkElegibility()) {
       await this.execute(
-        `systemctl disable ${SmartDaemonSystemdManager.createServiceNameFromServiceName(serviceArg.name)}`
+        `systemctl disable ${SmartDaemonSystemdManager.createServiceNameFromServiceName(
+          serviceArg.name
+        )}`
       );
     }
   }
 
   public async reload() {
     if (await this.checkElegibility()) {
-      await this.execute(
-        `systemctl daemon-reload`
-      );
+      await this.execute(`systemctl daemon-reload`);
     }
   }
 }

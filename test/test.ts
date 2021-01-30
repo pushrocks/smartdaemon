@@ -14,7 +14,7 @@ tap.test('should create a service', async () => {
     version: 'x.x.x',
     command: 'npm -v',
     description: 'displays the npm version',
-    workingDir: __dirname
+    workingDir: __dirname,
   });
 });
 
